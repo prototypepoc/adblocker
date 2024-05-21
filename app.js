@@ -3,19 +3,24 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Function to detect adblocker
     function detectAdblock() {
-        const testAd = document.createElement('div');
-        testAd.className = 'ad-banner';
-        testAd.style.display = 'none';
-        document.body.appendChild(testAd);
-        const isAdblockActive = testAd.offsetHeight === 0;
-        document.body.removeChild(testAd);
+        // Try to load a known ad URL
+        const testAd = document.createElement('script');
+        testAd.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js';
+        testAd.type = 'text/javascript';
+        testAd.async = true;
 
-        if (isAdblockActive) {
+        testAd.onerror = function () {
+            // Adblock detected
             adblockNotice.style.display = 'block';
             logUserAction('Adblocker detected');
-        } else {
+        };
+
+        testAd.onload = function () {
+            // No Adblock detected
             logUserAction('No adblocker detected');
-        }
+        };
+
+        document.body.appendChild(testAd);
     }
 
     // Function to log user action
